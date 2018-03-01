@@ -1,0 +1,25 @@
+{
+  "name": "kagglejs",
+  "version": "1.0.0",
+  "description": "No - it's not a Javascript framework. It's a bunch of Javascript code doing it's best in some Kaggle competitions.",
+  "main": "index.js",
+  "scripts": {
+	"test": "echo \"Error: no test specified\" && exit 1",
+	"titanic": "node ./titanic/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JakeKo/KaggleJS.git"
+  },
+  "author": "Jacob Koperski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JakeKo/KaggleJS/issues"
+  },
+  "homepage": "https://github.com/JakeKo/KaggleJS#readme",
+  "dependencies": {
+    "file-api": "^0.10.4",
+    "jquery": "^3.3.1",
+    "mime": "1.2.11"
+  }
+}
