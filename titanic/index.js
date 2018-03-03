@@ -1,6 +1,6 @@
 "use strict";
 
-const Parser = require("../lib/jquery-csv.min.js");
+const Parser = require("../lib/jquery-csv.min");
 const FS = require("fs");
 const RJS = require("../lib/rjs");
 
@@ -11,4 +11,5 @@ let table = RJS.head(train, 5);
 console.log(table.toString());
 RJS.tail(train, 5, table.columns, table.widths);
 
-console.log(RJS.getColumn(table.data, "PassengerId"));
+console.log(RJS.getProperty(table.data, "PassengerId"));
+console.log(RJS.getProperties(train));
