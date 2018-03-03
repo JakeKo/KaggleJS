@@ -5,22 +5,25 @@ const FS = require("fs");
 const RJS = require("../lib/rjs");
 const DataSet = RJS.DataSet;
 
-function cleanData(data) {
-	let dataSet = new DataSet(data);
+function cleanData(filePath) {
+	let dataSet = new DataSet(Parser.toObjects(FS.readFileSync(filePath, {
+		encoding: 'utf-8'
+	})));
+
 	dataSet.castColumnToScalar("PassengerId");
-	dataSet.castColumnToBoolean("Survived", x => x === "1");
+	dataSet.castColumnToScalar("Survived");
 	dataSet.castColumnToScalar("Pclass");
 	dataSet.castColumnToScalar("Age");
 	dataSet.castColumnToScalar("SibSp");
 	dataSet.castColumnToScalar("Fare");
 
-	return dataSet.data;
+	return dataSet;
 }
 
-let train = cleanData(Parser.toObjects(FS.readFileSync("./data/titanic/train.csv", { encoding: 'utf-8' })));
-let test = cleanData(Parser.toObjects(FS.readFileSync("./data/titanic/test.csv", { encoding: 'utf-8' })));
+let train = cleanData("./data/titanic/train.csv");
+let test = cleanData("./data/titanic/test.csv");
 
-console.log(RJS.head(train, 50).toString());
+console.log(train.head(15).toString());
 
 function getEntropy(response) {
 	let positiveRatio = RJS.sum(response) / response.length;
