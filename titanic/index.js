@@ -1,22 +1,26 @@
 "use strict";
 
-function cleanData(data) {
-	data = RJS.castColumnToScalar(data, "PassengerId");
-	data = RJS.castColumnToScalar(data, "Survived");
-	data = RJS.castColumnToScalar(data, "Pclass");
-	data = RJS.castColumnToScalar(data, "Age");
-	data = RJS.castColumnToScalar(data, "SibSp");
-	data = RJS.castColumnToScalar(data, "Fare");
-
-	return data;
-}
-
 const Parser = require("../lib/jquery-csv.min");
 const FS = require("fs");
 const RJS = require("../lib/rjs");
+const DataSet = RJS.DataSet;
+
+function cleanData(data) {
+	let dataSet = new DataSet(data);
+	dataSet.castColumnToScalar("PassengerId");
+	dataSet.castColumnToBoolean("Survived", x => x === "1");
+	dataSet.castColumnToScalar("Pclass");
+	dataSet.castColumnToScalar("Age");
+	dataSet.castColumnToScalar("SibSp");
+	dataSet.castColumnToScalar("Fare");
+
+	return dataSet.data;
+}
 
 let train = cleanData(Parser.toObjects(FS.readFileSync("./data/titanic/train.csv", { encoding: 'utf-8' })));
 let test = cleanData(Parser.toObjects(FS.readFileSync("./data/titanic/test.csv", { encoding: 'utf-8' })));
+
+console.log(RJS.head(train, 50).toString());
 
 function getEntropy(response) {
 	let positiveRatio = RJS.sum(response) / response.length;
