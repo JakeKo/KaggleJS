@@ -23,8 +23,6 @@ function cleanData(filePath) {
 let train = cleanData("./data/titanic/train.csv");
 let test = cleanData("./data/titanic/test.csv");
 
-console.log(train.head(15).toString());
-
 function getEntropy(response) {
 	let positiveRatio = RJS.sum(response) / response.length;
 	let negativeRatio = 1 - positiveRatio;
@@ -35,71 +33,59 @@ function getEntropy(response) {
 	return -positiveRatio * positiveScalar - negativeRatio * negativeScalar;
 }
 
-/*
-```{r}
-getEntropy = function(response) {
-	posRatio = sum(response) / length(response)
-	negRatio = 1 - posRatio
-	entropy = - posRatio * ifelse(posRatio == 0, 0, log2(posRatio)) - negRatio * ifelse(negRatio == 0, 0, log2(negRatio))
-	return(entropy)
-}
+function getAggregateEntropy(responses) {
+	let numElements = 0;
+	let totalEntropy = 0;
 
-getAggregateEntropy = function(responses) {
-	numElements = 0
-	totalEntropy = 0
-	
-	for (i in 1:length(responses)) {
-		numElements = numElements + length(responses[[i]])
-		totalEntropy = totalEntropy + length(responses[[i]]) * getEntropy(responses[[i]])
+	for (let response of responses) {
+		numElements += response.length;
+		totalEntropy += response.length * getEntropy(response);
 	}
-	
-	return(totalEntropy / numElements)
+
+	return totalEntropy / numElements;
 }
 
-# setResponses is a single vector
-# childResponses is a list of vectors
-getInformationGain = function(setResponses, childResponses) {
-	childEntropy = getAggregateEntropy(childResponses)
-	baseEntropy = getEntropy(setResponses)
-	return(baseEntropy - childEntropy)
+function getInformationGain(setResponses, childResponses) {
+	let childEntropy = getAggregateEntropy(childResponses);
+	let baseEntropy = getEntropy(setResponses);
+	return baseEntropy - childEntropy;
 }
-```
 
-```{r}
-vampires = data.frame(
-	vampire = c(F, F, T, T, T, F, F, F),
-	shadow = c("?", "Y", "?", "N", "?", "Y", "Y", "?"),
-	garlic = c(T, T, F, F, F, F, F, T),
-	complexion = c("P", "R", "R", "A", "A", "P", "A", "R"),
-	accent = c("N", "N", "N", "H", "O", "H", "H", "O")
-)
+let vampires = new DataSet([
+	{ vampire: false, shadow: "?", garlic: true, complexion: "P", accent: "N" },
+	{ vampire: false, shadow: "Y", garlic: true, complexion: "R", accent: "N" },
+	{ vampire: true, shadow: "?", garlic: false, complexion: "R", accent: "N" },
+	{ vampire: true, shadow: "N", garlic: false, complexion: "A", accent: "H" },
+	{ vampire: true, shadow: "?", garlic: false, complexion: "A", accent: "O" },
+	{ vampire: false, shadow: "Y", garlic: false, complexion: "P", accent: "H" },
+	{ vampire: false, shadow: "Y", garlic: false, complexion: "A", accent: "H" },
+	{ vampire: false, shadow: "?", garlic: true, complexion: "R", accent: "O" },
+]);
 
-shadows = list(
-	subset(vampires, shadow == "?")$vampire,
-	subset(vampires, shadow == "Y")$vampire,
-	subset(vampires, shadow == "N")$vampire
-)
+let shadows = [
+	vampires.subset(row => row.shadow === "?").at(undefined, "vampire"),
+	vampires.subset(row => row.shadow === "Y").at(undefined, "vampire"),
+	vampires.subset(row => row.shadow === "N").at(undefined, "vampire"),
+];
 
-garlics = list(
-	subset(vampires, garlic == T)$vampire,
-	subset(vampires, garlic == F)$vampire
-)
+let garlics = [
+	vampires.subset(row => row.garlic).at(undefined, "vampire"),
+	vampires.subset(row => !row.garlic).at(undefined, "vampire"),
+];
 
-complexions = list(
-	subset(vampires, complexion == "P")$vampire,
-	subset(vampires, complexion == "R")$vampire,
-	subset(vampires, complexion == "A")$vampire
-)
+let complexions = [
+	vampires.subset(row => row.complexion === "P").at(undefined, "vampire"),
+	vampires.subset(row => row.complexion === "R").at(undefined, "vampire"),
+	vampires.subset(row => row.complexion === "A").at(undefined, "vampire"),
+];
 
-accents = list(
-	subset(vampires, accent == "N")$vampire,
-	subset(vampires, accent == "H")$vampire,
-	subset(vampires, accent == "O")$vampire
-)
+let accents = [
+	vampires.subset(row => row.accent === "N").at(undefined, "vampire"),
+	vampires.subset(row => row.accent === "H").at(undefined, "vampire"),
+	vampires.subset(row => row.accent === "O").at(undefined, "vampire"),
+];
 
-
-cat("Information gain from splitting vampires on shadow:", getInformationGain(vampires$vampire, shadows), "\n")
-cat("Information gain from splitting vampires on garlic:", getInformationGain(vampires$vampire, garlics), "\n")
-cat("Information gain from splitting vampires on complexion:", getInformationGain(vampires$vampire, complexions), "\n")
-cat("Information gain from splitting vampires on accent:", getInformationGain(vampires$vampire, accents), "\n")
-*/
+console.log(`Information gain on shadow: ${getInformationGain(vampires.at(undefined, "vampire"), shadows)}`)
+console.log(`Information gain on garlic: ${getInformationGain(vampires.at(undefined, "vampire"), garlics)}`)
+console.log(`Information gain on complexion: ${getInformationGain(vampires.at(undefined, "vampire"), complexions)}`)
+console.log(`Information gain on accent: ${getInformationGain(vampires.at(undefined, "vampire"), accents)}`)
