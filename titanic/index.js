@@ -23,6 +23,18 @@ function cleanData(filePath) {
 let train = cleanData("./data/titanic/train.csv");
 let test = cleanData("./data/titanic/test.csv");
 
+let trainTable = train.head(5);
+console.log(trainTable.toString());
+
+let testTable = test.head(5, trainTable.columns, trainTable.widths);
+console.log(testTable.toString());
+
+
+
+
+
+
+
 function getEntropy(response) {
 	let positiveRatio = RJS.sum(response) / response.length;
 	let negativeRatio = 1 - positiveRatio;
