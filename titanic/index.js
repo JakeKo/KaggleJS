@@ -10,30 +10,27 @@ function cleanData(filePath) {
 		encoding: 'utf-8'
 	})));
 
-	dataSet.castColumnToScalar("PassengerId");
-	dataSet.castColumnToScalar("Survived");
-	dataSet.castColumnToScalar("Pclass");
-	dataSet.castColumnToScalar("Age");
-	dataSet.castColumnToScalar("SibSp");
-	dataSet.castColumnToScalar("Fare");
+	dataSet.castPropertyToScalar("PassengerId");
+	dataSet.castPropertyToScalar("Survived");
+	dataSet.castPropertyToScalar("Pclass");
+	dataSet.castPropertyToScalar("Age");
+	dataSet.castPropertyToScalar("SibSp");
+	dataSet.castPropertyToScalar("Fare");
 
 	return dataSet;
 }
 
 let train = cleanData("./data/titanic/train.csv");
 let test = cleanData("./data/titanic/test.csv");
+console.log(train.getProperties());
 
 let trainTable = train.head(5);
 console.log(trainTable.toString());
 
-let testTable = test.head(5, trainTable.columns, trainTable.widths);
+let testTable = test.head(5);
 console.log(testTable.toString());
 
-
-
-
-
-
+console.log(RJS.unique(train.at(undefined, "Survived")))
 
 function getEntropy(response) {
 	let positiveRatio = RJS.sum(response) / response.length;
